@@ -13,12 +13,13 @@ import {
     XIcon,
 } from 'lucide-react';
 import srcLogo from '../assets/src-logo.webp';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Layout = ({ children }) => {
     const { user, logout } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
 
     const navigation = [
         { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
@@ -31,6 +32,8 @@ const Layout = ({ children }) => {
 
     const handleLogout = async () => {
         await logout();
+        // Navigate to login with replace to clear history stack
+        navigate('/login', { replace: true });
     };
 
     const hasPermission = (permission) => {
@@ -41,47 +44,53 @@ const Layout = ({ children }) => {
     const filteredNavigation = navigation.filter((item) => hasPermission(item.permission));
 
     return (
-        <div className='min-h-screen bg-gray-50'>
+        <div className='min-h-screen bg-background'>
             {/* Mobile sidebar */}
             <div className={`fixed inset-0 flex z-40 md:hidden ${sidebarOpen ? '' : 'hidden'}`}>
                 <div
-                    className='fixed inset-0 bg-gray-600 bg-opacity-75'
+                    className='fixed inset-0 bg-black/50 backdrop-blur-sm'
                     onClick={() => setSidebarOpen(false)}
                 />
 
-                <div className='relative flex-1 flex flex-col max-w-xs w-full bg-white'>
+                <div className='relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-elevated'>
                     <div className='absolute top-0 right-0 -mr-12 pt-2'>
                         <button
                             type='button'
-                            className='ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white'
+                            className='ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white bg-white/10 hover:bg-white/20 transition-colors'
                             onClick={() => setSidebarOpen(false)}
                         >
                             <XIcon className='h-6 w-6 text-white' />
                         </button>
                     </div>
 
-                    <div className='flex-1 h-0 pt-5 pb-4 overflow-y-auto'>
-                        <div className='flex items-center flex-shrink-0 px-4'>
+                    <div className='flex-1 h-0 pt-6 pb-4 overflow-y-auto'>
+                        {/* Enhanced Logo Section */}
+                        <div className='flex items-center flex-shrink-0 px-6 mb-8'>
                             <div className='flex items-center'>
-                                <img src={srcLogo} alt='SRC Logo' className='h-20 w-auto' />
+                                <img src={srcLogo} alt='SRC Logo' className='h-16 w-auto' />
+                                <div className='ml-3'>
+                                    <h2 className='text-body font-semibold text-foreground'>Laboratory Management</h2>
+                                </div>
                             </div>
                         </div>
-                        <nav className='mt-5 px-2 space-y-1'>
+                        
+                        {/* Enhanced Navigation */}
+                        <nav className='px-4 space-y-2'>
                             {filteredNavigation.map((item) => {
                                 const isActive = location.pathname === item.href;
                                 return (
                                     <Link
                                         key={item.name}
                                         to={item.href}
-                                        className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                                            isActive
-                                                ? 'bg-blue-100 text-blue-900'
-                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                        className={`nav-item group flex items-center px-4 py-3 text-body font-medium ${
+                                            isActive ? 'active' : 'text-foreground/70 hover:text-foreground'
                                         }`}
                                         onClick={() => setSidebarOpen(false)}
                                     >
                                         <item.icon
-                                            className={`mr-4 h-6 w-6 ${isActive ? 'text-blue-500' : 'text-gray-400'}`}
+                                            className={`mr-4 h-5 w-5 transition-colors ${
+                                                isActive ? 'text-current' : 'text-muted-foreground group-hover:text-foreground'
+                                            }`}
                                         />
                                         {item.name}
                                     </Link>
@@ -90,43 +99,53 @@ const Layout = ({ children }) => {
                         </nav>
                     </div>
 
-                    <div className='flex-shrink-0 flex border-t border-gray-200 p-4'>
+                    {/* Enhanced User Section */}
+                    <div className='flex-shrink-0 border-t border-border p-4 bg-muted/30'>
                         <div className='flex items-center'>
+                            <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground font-semibold text-sm'>
+                                {(user?.firstName?.[0] || user?.name?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+                            </div>
                             <div className='ml-3'>
-                                <p className='text-base font-medium text-gray-700'>
+                                <p className='text-body font-medium text-foreground'>
                                     {`${user?.firstName || ''} ${user?.lastName || ''}`.trim() ||
                                         user?.name ||
                                         user?.username}
                                 </p>
-                                <p className='text-sm font-medium text-gray-500'>{user?.role}</p>
+                                <p className='text-small text-muted'>{user?.role}</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Static sidebar for desktop */}
-            <div className='hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0'>
-                <div className='flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white'>
-                    <div className='flex-1 flex flex-col pt-5 pb-4 overflow-y-auto'>
-                        <div className='flex items-center flex-shrink-0 px-4'>
-                            <img src={srcLogo} alt='SRC Logo' className='h-20 w-auto' />
+            {/* Enhanced Static sidebar for desktop */}
+            <div className='hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0'>
+                <div className='flex-1 flex flex-col min-h-0 border-r border-sidebar-border bg-sidebar-bg shadow-card'>
+                    <div className='flex-1 flex flex-col pt-6 pb-4 overflow-y-auto'>
+                        {/* Enhanced Logo Section */}
+                        <div className='flex items-center flex-shrink-0 px-6 mb-8'>
+                            <img src={srcLogo} alt='SRC Logo' className='h-16 w-auto' />
+                            <div className='ml-3'>
+                                <h2 className='text-body font-semibold text-foreground'>Laboratory Management</h2>
+                            </div>
                         </div>
-                        <nav className='mt-5 flex-1 px-2 bg-white space-y-1'>
+                        
+                        {/* Enhanced Navigation */}
+                        <nav className='flex-1 px-4 space-y-1'>
                             {filteredNavigation.map((item) => {
                                 const isActive = location.pathname === item.href;
                                 return (
                                     <Link
                                         key={item.name}
                                         to={item.href}
-                                        className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                                            isActive
-                                                ? 'bg-blue-100 text-blue-900'
-                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                        className={`nav-item group flex items-center px-4 py-3 text-body font-medium ${
+                                            isActive ? 'active' : 'text-foreground/70 hover:text-foreground'
                                         }`}
                                     >
                                         <item.icon
-                                            className={`mr-3 h-5 w-5 ${isActive ? 'text-blue-500' : 'text-gray-400'}`}
+                                            className={`mr-4 h-5 w-5 transition-colors ${
+                                                isActive ? 'text-current' : 'text-muted-foreground group-hover:text-foreground'
+                                            }`}
                                         />
                                         {item.name}
                                     </Link>
@@ -135,21 +154,26 @@ const Layout = ({ children }) => {
                         </nav>
                     </div>
 
-                    <div className='flex-shrink-0 flex border-t border-gray-200 p-4'>
+                    {/* Enhanced User Section */}
+                    <div className='flex-shrink-0 border-t border-border p-4 bg-muted/20'>
                         <div className='flex items-center w-full'>
-                            <div className='flex-1'>
-                                <p className='text-sm font-medium text-gray-700'>
+                            <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground font-semibold text-sm'>
+                                {(user?.firstName?.[0] || user?.name?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+                            </div>
+                            <div className='flex-1 ml-3'>
+                                <p className='text-body font-medium text-foreground'>
                                     {`${user?.firstName || ''} ${user?.lastName || ''}`.trim() ||
                                         user?.name ||
                                         user?.username}
                                 </p>
-                                <p className='text-xs font-medium text-gray-500'>{user?.role}</p>
+                                <p className='text-small text-muted'>{user?.role}</p>
                             </div>
                             <Button
                                 variant='ghost'
                                 size='sm'
                                 onClick={handleLogout}
-                                className='ml-3'
+                                className='ml-3 btn-enhanced hover:bg-destructive/10 hover:text-destructive'
+                                title='Logout'
                             >
                                 <LogOutIcon className='h-4 w-4' />
                             </Button>
@@ -158,21 +182,22 @@ const Layout = ({ children }) => {
                 </div>
             </div>
 
-            {/* Main content */}
-            <div className='md:pl-64 flex flex-col flex-1'>
-                <div className='sticky top-0 z-10 md:hidden pl-1 pt-1 sm:pl-3 sm:pt-3 bg-gray-50'>
-                    <button
-                        type='button'
-                        className='-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500'
+            {/* Enhanced Main content */}
+            <div className='md:pl-72 flex flex-col flex-1'>
+                <div className='sticky top-0 z-10 md:hidden pl-1 pt-1 sm:pl-3 sm:pt-3 bg-background'>
+                    <Button
+                        variant='ghost'
+                        size='icon'
+                        className='h-12 w-12 btn-enhanced'
                         onClick={() => setSidebarOpen(true)}
                     >
                         <MenuIcon className='h-6 w-6' />
-                    </button>
+                    </Button>
                 </div>
 
-                <main className='flex-1'>
-                    <div className='py-6'>
-                        <div className='max-w-7xl mx-auto px-4 sm:px-6 md:px-8'>{children}</div>
+                <main className='flex-1 animate-fade-in'>
+                    <div className='py-8'>
+                        <div className='max-w-7xl mx-auto px-6 sm:px-8 lg:px-10'>{children}</div>
                     </div>
                 </main>
             </div>
