@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navigate, useLocation, Link } from 'react-router-dom';
+import { Navigate, useNavigate, Link } from 'react-router-dom';
 import useAuth from '@/hooks/useAuth.js';
 import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
@@ -11,7 +11,8 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card.jsx';
-import { Eye, EyeOff, Loader2, BeakerIcon } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import srcLogo from '../assets/src-logo.webp';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -22,12 +23,11 @@ const Login = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { login, isAuthenticated, error } = useAuth();
-    const location = useLocation();
+    const navigate = useNavigate();
 
-    // Redirect if already authenticated
+    // Redirect if already authenticated - always go to dashboard
     if (isAuthenticated) {
-        const from = location.state?.from?.pathname || '/dashboard';
-        return <Navigate to={from} replace />;
+        return <Navigate to="/dashboard" replace />;
     }
 
     const handleChange = (e) => {
@@ -45,7 +45,8 @@ const Login = () => {
         try {
             const result = await login(formData);
             if (result.success) {
-                // Navigation will happen automatically due to auth state change
+                // Always redirect to dashboard on successful login
+                navigate('/dashboard', { replace: true });
             }
         } catch (err) {
             console.error('Login error:', err);
@@ -55,17 +56,16 @@ const Login = () => {
     };
 
     return (
-        <div className='min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8'>
-            <div className='max-w-md w-full space-y-8'>
+        <div className='min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8'>
+            <div className='max-w-md w-full space-y-8 animate-fade-in'>
                 <div className='text-center'>
-                    <div className='mx-auto h-12 w-12 flex items-center justify-center bg-blue-600 rounded-lg'>
-                        <BeakerIcon className='h-8 w-8 text-white' />
+                    <div className='mx-auto mb-8'>
+                        <img src={srcLogo} alt='SRC Logo' className='h-20 w-auto mx-auto' />
                     </div>
-                    <h2 className='mt-6 text-3xl font-bold text-gray-900'>SRC LIMS</h2>
-                    <p className='mt-2 text-sm text-gray-600'>Sign in to your account</p>
+                    <p className='text-body text-muted'>Sign in to your account</p>
                 </div>
 
-                <Card className='w-full'>
+                <Card className='w-full card-enhanced shadow-elevated'>
                     <form onSubmit={handleSubmit}>
                         <CardHeader>
                             <CardTitle>Welcome Back</CardTitle>
@@ -74,10 +74,10 @@ const Login = () => {
                             </CardDescription>
                         </CardHeader>
 
-                        <CardContent className='space-y-4'>
+                        <CardContent className='space-y-6'>
                             {error && (
-                                <div className='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md'>
-                                    <p className='text-sm'>
+                                <div className='bg-destructive/10 border border-destructive/20 rounded-lg p-4 animate-fade-in'>
+                                    <p className='text-body text-destructive font-medium'>
                                         {error.message || 'Invalid username or password'}
                                     </p>
                                 </div>
@@ -86,7 +86,7 @@ const Login = () => {
                             <div className='space-y-2'>
                                 <label
                                     htmlFor='username'
-                                    className='text-sm font-medium text-gray-700'
+                                    className='block text-body font-semibold text-foreground'
                                 >
                                     Username or Email
                                 </label>
@@ -99,14 +99,14 @@ const Login = () => {
                                     value={formData.username}
                                     onChange={handleChange}
                                     placeholder='Enter your username or email'
-                                    className='w-full'
+                                    className='input-enhanced'
                                 />
                             </div>
 
                             <div className='space-y-2'>
                                 <label
                                     htmlFor='password'
-                                    className='text-sm font-medium text-gray-700'
+                                    className='block text-body font-semibold text-foreground'
                                 >
                                     Password
                                 </label>
@@ -120,17 +120,17 @@ const Login = () => {
                                         value={formData.password}
                                         onChange={handleChange}
                                         placeholder='Enter your password'
-                                        className='w-full pr-10'
+                                        className='input-enhanced pr-10'
                                     />
                                     <button
                                         type='button'
-                                        className='absolute inset-y-0 right-0 flex items-center pr-3'
+                                        className='absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground transition-colors'
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? (
-                                            <EyeOff className='h-4 w-4 text-gray-400' />
+                                            <EyeOff className='h-4 w-4' />
                                         ) : (
-                                            <Eye className='h-4 w-4 text-gray-400' />
+                                            <Eye className='h-4 w-4' />
                                         )}
                                     </button>
                                 </div>
@@ -140,7 +140,7 @@ const Login = () => {
                         <CardFooter className='flex flex-col space-y-4'>
                             <Button
                                 type='submit'
-                                className='w-full'
+                                className='w-full btn-enhanced'
                                 disabled={isSubmitting || !formData.username || !formData.password}
                             >
                                 {isSubmitting ? (
@@ -154,7 +154,7 @@ const Login = () => {
                             </Button>
 
                             <div className='text-center'>
-                                <p className='text-xs text-gray-500'>
+                                <p className='text-small text-muted'>
                                     Need help? Contact your system administrator
                                 </p>
                             </div>

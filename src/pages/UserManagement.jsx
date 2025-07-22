@@ -220,97 +220,119 @@ const UserManagement = () => {
     // Check permissions
     if (!hasPermission('user_management')) {
         return (
-            <div className='text-center py-12'>
-                <div className='mx-auto flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4'>
-                    <UsersIcon className='w-6 h-6 text-red-600' />
+            <div className='text-center py-16 animate-fade-in'>
+                <div className='mx-auto flex items-center justify-center w-16 h-16 bg-destructive/10 rounded-full mb-6'>
+                    <UsersIcon className='w-8 h-8 text-destructive' />
                 </div>
-                <h1 className='text-xl font-semibold text-gray-900 mb-2'>Access Denied</h1>
-                <p className='text-gray-600'>
-                    You don't have permission to access user management.
+                <h1 className='text-heading-2 text-foreground mb-3'>Access Denied</h1>
+                <p className='text-body text-muted max-w-md mx-auto'>
+                    You don't have permission to access user management. Please contact your administrator for access.
                 </p>
             </div>
         );
     }
 
     return (
-        <div className='space-y-6'>
-            {/* Header */}
+        <div className='space-y-8 animate-fade-in'>
+            {/* Enhanced Header */}
             <div className='flex items-center justify-between'>
                 <div>
-                    <h1 className='text-2xl font-bold text-gray-900'>User Management</h1>
-                    <p className='text-gray-600 mt-1'>Manage system users and their permissions</p>
+                    <h1 className='text-heading-1 text-foreground'>User Management</h1>
+                    <p className='text-body text-muted mt-2'>Manage system users and their permissions</p>
                 </div>
                 {hasPermission('user_create') && (
-                    <Button onClick={() => setShowUserForm(true)} className='gap-2'>
+                    <Button onClick={() => setShowUserForm(true)} className='gap-2 btn-enhanced'>
                         <PlusIcon className='h-4 w-4' />
                         Add User
                     </Button>
                 )}
             </div>
 
-            {/* Stats Cards */}
-            <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
-                <Card>
+            {/* Enhanced Stats Cards */}
+            <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
+                <Card className='card-enhanced group'>
                     <CardContent className='pt-6'>
-                        <div className='flex items-center'>
-                            <div className='text-2xl font-bold text-blue-600'>{totalUsers}</div>
-                            <div className='ml-2 text-sm text-gray-600'>Total Users</div>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className='pt-6'>
-                        <div className='flex items-center'>
-                            <div className='text-2xl font-bold text-green-600'>
-                                {users.filter((u) => u.isActive ?? u.active ?? true).length}
+                        <div className='flex items-center justify-between'>
+                            <div>
+                                <div className='text-3xl font-bold text-primary'>{totalUsers}</div>
+                                <div className='text-small font-semibold text-foreground/80 uppercase tracking-wide mt-1'>Total Users</div>
                             </div>
-                            <div className='ml-2 text-sm text-gray-600'>Active</div>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className='pt-6'>
-                        <div className='flex items-center'>
-                            <div className='text-2xl font-bold text-red-600'>
-                                {users.filter((u) => !(u.isActive ?? u.active ?? true)).length}
+                            <div className='p-3 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors'>
+                                <UsersIcon className='h-6 w-6 text-primary' />
                             </div>
-                            <div className='ml-2 text-sm text-gray-600'>Inactive</div>
                         </div>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className='card-enhanced group'>
                     <CardContent className='pt-6'>
-                        <div className='flex items-center'>
-                            <div className='text-2xl font-bold text-purple-600'>{roles.length}</div>
-                            <div className='ml-2 text-sm text-gray-600'>Roles</div>
+                        <div className='flex items-center justify-between'>
+                            <div>
+                                <div className='text-3xl font-bold text-success'>
+                                    {users.filter((u) => u.isActive ?? u.active ?? true).length}
+                                </div>
+                                <div className='text-small font-semibold text-foreground/80 uppercase tracking-wide mt-1'>Active</div>
+                            </div>
+                            <div className='p-3 bg-success/10 rounded-lg group-hover:bg-success/20 transition-colors'>
+                                <UsersIcon className='h-6 w-6 text-success' />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className='card-enhanced group'>
+                    <CardContent className='pt-6'>
+                        <div className='flex items-center justify-between'>
+                            <div>
+                                <div className='text-3xl font-bold text-destructive'>
+                                    {users.filter((u) => !(u.isActive ?? u.active ?? true)).length}
+                                </div>
+                                <div className='text-small font-semibold text-foreground/80 uppercase tracking-wide mt-1'>Inactive</div>
+                            </div>
+                            <div className='p-3 bg-destructive/10 rounded-lg group-hover:bg-destructive/20 transition-colors'>
+                                <UsersIcon className='h-6 w-6 text-destructive' />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className='card-enhanced group'>
+                    <CardContent className='pt-6'>
+                        <div className='flex items-center justify-between'>
+                            <div>
+                                <div className='text-3xl font-bold text-info'>{roles.length}</div>
+                                <div className='text-small font-semibold text-foreground/80 uppercase tracking-wide mt-1'>Roles</div>
+                            </div>
+                            <div className='p-3 bg-info/10 rounded-lg group-hover:bg-info/20 transition-colors'>
+                                <Badge className='w-6 h-6 bg-info text-info-foreground' />
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
             </div>
 
-            {/* Filters */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className='flex items-center gap-2'>
-                        <FilterIcon className='h-5 w-5' />
+            {/* Enhanced Filters */}
+            <Card className='card-enhanced'>
+                <CardHeader className='pb-4'>
+                    <CardTitle className='flex items-center gap-3 text-heading-3'>
+                        <div className='p-2 bg-info/10 rounded-lg'>
+                            <FilterIcon className='h-5 w-5 text-info' />
+                        </div>
                         Filters
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
                         <div className='relative'>
-                            <SearchIcon className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4' />
+                            <SearchIcon className='absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4' />
                             <Input
                                 placeholder='Search users...'
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className='pl-10'
+                                className='pl-10 input-enhanced'
                             />
                         </div>
 
                         <Select value={roleFilter} onValueChange={setRoleFilter}>
-                            <SelectTrigger>
-                                <SelectValue placeholder='Filter by role' />
+                            <SelectTrigger className='input-enhanced'>
+                                <SelectValue placeholder='All Roles' />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value=''>All Roles</SelectItem>
@@ -323,8 +345,8 @@ const UserManagement = () => {
                         </Select>
 
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
-                            <SelectTrigger>
-                                <SelectValue placeholder='Filter by status' />
+                            <SelectTrigger className='input-enhanced'>
+                                <SelectValue placeholder='All Status' />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value=''>All Status</SelectItem>
@@ -334,10 +356,10 @@ const UserManagement = () => {
                         </Select>
 
                         <div className='flex gap-2'>
-                            <Button variant='outline' onClick={resetFilters} className='flex-1'>
+                            <Button variant='outline' onClick={resetFilters} className='flex-1 btn-enhanced'>
                                 Clear Filters
                             </Button>
-                            <Button variant='outline' onClick={() => loadUsers()} className='px-3'>
+                            <Button variant='outline' onClick={() => loadUsers()} className='px-3 btn-enhanced'>
                                 <RefreshCwIcon className='h-4 w-4' />
                             </Button>
                         </div>
@@ -345,32 +367,36 @@ const UserManagement = () => {
                 </CardContent>
             </Card>
 
-            {/* Users Table */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Users ({loading ? '...' : totalUsers})</CardTitle>
+            {/* Enhanced Users Table */}
+            <Card className='card-enhanced'>
+                <CardHeader className='pb-4'>
+                    <CardTitle className='text-heading-3'>
+                        Users ({loading ? <span className='animate-pulse'>...</span> : totalUsers})
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     {error && (
-                        <div className='bg-red-50 border border-red-200 rounded-md p-4 mb-4'>
-                            <p className='text-red-800'>{error}</p>
+                        <div className='bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-6 animate-fade-in'>
+                            <p className='text-destructive font-medium'>{error}</p>
                         </div>
                     )}
 
-                    <UserList
-                        users={filteredUsers}
-                        loading={loading}
-                        onEdit={handleEditUser}
-                        onDelete={handleDeleteUser}
-                        onToggleStatus={handleToggleStatus}
-                        hasEditPermission={hasPermission('user_edit')}
-                        hasDeletePermission={hasPermission('user_delete')}
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                        usersPerPage={usersPerPage}
-                        totalUsers={totalUsers}
-                    />
+                    <div className='table-enhanced'>
+                        <UserList
+                            users={filteredUsers}
+                            loading={loading}
+                            onEdit={handleEditUser}
+                            onDelete={handleDeleteUser}
+                            onToggleStatus={handleToggleStatus}
+                            hasEditPermission={hasPermission('user_edit')}
+                            hasDeletePermission={hasPermission('user_delete')}
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                            usersPerPage={usersPerPage}
+                            totalUsers={totalUsers}
+                        />
+                    </div>
                 </CardContent>
             </Card>
 

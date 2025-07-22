@@ -95,65 +95,72 @@ const Dashboard = () => {
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
             case 'completed':
-                return 'bg-green-100 text-green-800';
+                return 'status-active';
             case 'in progress':
-                return 'bg-blue-100 text-blue-800';
+                return 'bg-blue-50 text-blue-700 border-blue-200';
             case 'pending review':
-                return 'bg-yellow-100 text-yellow-800';
+                return 'status-pending';
             case 'awaiting sample':
-                return 'bg-gray-100 text-gray-800';
+                return 'status-inactive';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'status-inactive';
         }
     };
 
     const getPriorityColor = (priority) => {
         switch (priority.toLowerCase()) {
             case 'high':
-                return 'text-red-600';
+                return 'priority-high';
             case 'medium':
-                return 'text-yellow-600';
+                return 'priority-medium';
             case 'low':
-                return 'text-green-600';
+                return 'priority-low';
             default:
-                return 'text-gray-600';
+                return 'text-muted-foreground';
+        }
+    };
+
+    const getChangeTypeColor = (changeType) => {
+        switch (changeType) {
+            case 'positive':
+                return 'text-green-600';
+            case 'negative':
+                return 'text-red-600';
+            default:
+                return 'text-muted-foreground';
         }
     };
 
     return (
-        <div className='space-y-6'>
-            {/* Header */}
+        <div className='space-y-8 animate-fade-in'>
+            {/* Enhanced Header */}
             <div className='md:flex md:items-center md:justify-between'>
                 <div className='flex-1 min-w-0'>
-                    <h2 className='text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate'>
+                    <h1 className='text-heading-1 text-foreground'>
                         Welcome back, {user?.firstName || user?.username}!
-                    </h2>
-                    <p className='mt-1 text-sm text-gray-500'>
+                    </h1>
+                    <p className='mt-2 text-body text-muted'>
                         Here's an overview of your laboratory operations
                     </p>
                 </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4'>
+            {/* Enhanced Stats Grid */}
+            <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4'>
                 {stats.map((stat) => (
-                    <Card key={stat.title}>
-                        <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                            <CardTitle className='text-sm font-medium'>{stat.title}</CardTitle>
-                            <stat.icon className='h-4 w-4 text-muted-foreground' />
+                    <Card key={stat.title} className='card-enhanced group'>
+                        <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-3'>
+                            <CardTitle className='text-small font-semibold text-foreground/80 uppercase tracking-wide'>
+                                {stat.title}
+                            </CardTitle>
+                            <div className='p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors'>
+                                <stat.icon className='h-5 w-5 text-primary' />
+                            </div>
                         </CardHeader>
-                        <CardContent>
-                            <div className='text-2xl font-bold'>{stat.value}</div>
-                            <p className='text-xs text-muted-foreground mt-1'>{stat.description}</p>
-                            <div
-                                className={`text-xs mt-1 ${
-                                    stat.changeType === 'positive'
-                                        ? 'text-green-600'
-                                        : stat.changeType === 'negative'
-                                          ? 'text-red-600'
-                                          : 'text-gray-600'
-                                }`}
-                            >
+                        <CardContent className='space-y-3'>
+                            <div className='text-3xl font-bold text-foreground'>{stat.value}</div>
+                            <p className='text-small text-muted leading-relaxed'>{stat.description}</p>
+                            <div className={`text-small font-medium ${getChangeTypeColor(stat.changeType)}`}>
                                 {stat.change} from last month
                             </div>
                         </CardContent>
@@ -161,87 +168,95 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            {/* Main Content Grid */}
-            <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-                {/* Recent Samples */}
-                <Card className='lg:col-span-2'>
-                    <CardHeader>
-                        <CardTitle className='flex items-center gap-2'>
-                            <FlaskConicalIcon className='h-5 w-5' />
-                            Recent Samples
-                        </CardTitle>
-                        <CardDescription>
-                            Latest samples submitted to the laboratory
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className='space-y-4'>
-                            {recentSamples.map((sample) => (
-                                <div
-                                    key={sample.id}
-                                    className='flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50'
-                                >
-                                    <div className='flex-1'>
-                                        <div className='flex items-center gap-3'>
-                                            <h4 className='font-semibold text-gray-900'>
-                                                {sample.id}
-                                            </h4>
-                                            <span
-                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(sample.status)}`}
-                                            >
-                                                {sample.status}
-                                            </span>
-                                            <span
-                                                className={`text-xs font-medium ${getPriorityColor(sample.priority)}`}
-                                            >
-                                                {sample.priority} Priority
-                                            </span>
-                                        </div>
-                                        <p className='text-sm text-gray-600 mt-1'>
-                                            {sample.client}
-                                        </p>
-                                        <p className='text-xs text-gray-500'>
-                                            {sample.sampleType} • Submitted {sample.submittedDate}
-                                        </p>
+            {/* Enhanced Recent Samples Section */}
+            <Card className='card-enhanced'>
+                <CardHeader className='pb-4'>
+                    <CardTitle className='flex items-center gap-3 text-heading-3'>
+                        <div className='p-2 bg-primary/10 rounded-lg'>
+                            <FlaskConicalIcon className='h-5 w-5 text-primary' />
+                        </div>
+                        Recent Samples
+                    </CardTitle>
+                    <CardDescription className='text-body'>
+                        Latest samples submitted to the laboratory
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className='space-y-4'>
+                        {recentSamples.map((sample, index) => (
+                            <div
+                                key={sample.id}
+                                className='flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/30 transition-all duration-200 hover:border-primary/20 group'
+                                style={{ animationDelay: `${index * 0.1}s` }}
+                            >
+                                <div className='flex-1'>
+                                    <div className='flex items-center gap-3 mb-2'>
+                                        <h4 className='font-semibold text-foreground text-body'>
+                                            {sample.id}
+                                        </h4>
+                                        <span
+                                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(sample.status)}`}
+                                        >
+                                            {sample.status}
+                                        </span>
+                                        <span
+                                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getPriorityColor(sample.priority)}`}
+                                        >
+                                            {sample.priority} Priority
+                                        </span>
                                     </div>
-                                    <Button variant='outline' size='sm'>
-                                        View Details
-                                    </Button>
+                                    <p className='text-body font-medium text-foreground'>
+                                        {sample.client}
+                                    </p>
+                                    <p className='text-small text-muted'>
+                                        {sample.sampleType} • Submitted {sample.submittedDate}
+                                    </p>
                                 </div>
-                            ))}
-                        </div>
-                        <div className='mt-4'>
-                            <Button variant='outline' className='w-full'>
-                                View All Samples
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+                                <Button variant='outline' size='sm' className='btn-enhanced'>
+                                    View Details
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                    <div className='mt-6 pt-4 border-t border-border'>
+                        <Button variant='outline' className='w-full btn-enhanced'>
+                            View All Samples
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
 
-            {/* Quick Actions */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Quick Actions</CardTitle>
-                    <CardDescription>Common tasks and shortcuts</CardDescription>
+            {/* Enhanced Quick Actions */}
+            <Card className='card-enhanced'>
+                <CardHeader className='pb-4'>
+                    <CardTitle className='text-heading-3'>Quick Actions</CardTitle>
+                    <CardDescription className='text-body'>Common tasks and shortcuts</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className='grid grid-cols-2 gap-4 sm:grid-cols-4'>
-                        <Button className='h-20 flex-col gap-2' variant='outline'>
-                            <FlaskConicalIcon className='h-6 w-6' />
-                            <span className='text-sm'>New Sample</span>
+                        <Button className='h-24 flex-col gap-3 btn-enhanced group' variant='outline'>
+                            <div className='p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors'>
+                                <FlaskConicalIcon className='h-6 w-6 text-primary' />
+                            </div>
+                            <span className='text-small font-medium'>New Sample</span>
                         </Button>
-                        <Button className='h-20 flex-col gap-2' variant='outline'>
-                            <ClipboardListIcon className='h-6 w-6' />
-                            <span className='text-sm'>Record Results</span>
+                        <Button className='h-24 flex-col gap-3 btn-enhanced group' variant='outline'>
+                            <div className='p-2 bg-success/10 rounded-lg group-hover:bg-success/20 transition-colors'>
+                                <ClipboardListIcon className='h-6 w-6 text-success' />
+                            </div>
+                            <span className='text-small font-medium'>Record Results</span>
                         </Button>
-                        <Button className='h-20 flex-col gap-2' variant='outline'>
-                            <FileTextIcon className='h-6 w-6' />
-                            <span className='text-sm'>Generate Report</span>
+                        <Button className='h-24 flex-col gap-3 btn-enhanced group' variant='outline'>
+                            <div className='p-2 bg-info/10 rounded-lg group-hover:bg-info/20 transition-colors'>
+                                <FileTextIcon className='h-6 w-6 text-info' />
+                            </div>
+                            <span className='text-small font-medium'>Generate Report</span>
                         </Button>
-                        <Button className='h-20 flex-col gap-2' variant='outline'>
-                            <TrendingUpIcon className='h-6 w-6' />
-                            <span className='text-sm'>View Analytics</span>
+                        <Button className='h-24 flex-col gap-3 btn-enhanced group' variant='outline'>
+                            <div className='p-2 bg-warning/10 rounded-lg group-hover:bg-warning/20 transition-colors'>
+                                <TrendingUpIcon className='h-6 w-6 text-warning' />
+                            </div>
+                            <span className='text-small font-medium'>View Analytics</span>
                         </Button>
                     </div>
                 </CardContent>

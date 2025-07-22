@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useMemo, useCallback } from 'react';
 import authService from '../services/authService.js';
 import { getTokenStatus } from '../utils/tokenUtils.js';
+import { navigateTo } from '../services/navigationService.js';
 
 const AuthContext = createContext(null);
 
@@ -19,6 +20,9 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
+        
+        // Navigate to login with replace to clear navigation state
+        navigateTo('/login', { replace: true });
     }, []);
 
     // Check token validity and handle expiry

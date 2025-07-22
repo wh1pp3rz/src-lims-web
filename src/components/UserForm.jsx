@@ -233,19 +233,19 @@ const UserForm = ({ user, roles, onSubmit, onCancel }) => {
 
     return (
         <Dialog open={true} onOpenChange={(open) => !open && onCancel()}>
-            <DialogContent className='max-w-4xl max-h-[90vh] overflow-hidden flex flex-col'>
-                <DialogHeader>
-                    <DialogTitle>{user ? 'Edit User' : 'Create New User'}</DialogTitle>
+            <DialogContent className='max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-elevated'>
+                <DialogHeader className='pb-4'>
+                    <DialogTitle className='text-heading-2'>{user ? 'Edit User' : 'Create New User'}</DialogTitle>
                     <DialogClose onClick={onCancel} />
                 </DialogHeader>
 
-                {/* Tab Navigation */}
-                <div className='flex border-b border-gray-200'>
+                {/* Enhanced Tab Navigation */}
+                <div className='flex border-b border-border bg-muted/30'>
                     <button
-                        className={`px-4 py-2 text-sm font-medium border-b-2 ${
+                        className={`px-6 py-3 text-body font-medium border-b-2 transition-all duration-200 ${
                             activeTab === 'basic'
-                                ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                ? 'border-primary text-primary bg-background'
+                                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
                         }`}
                         onClick={() => setActiveTab('basic')}
                     >
@@ -254,10 +254,10 @@ const UserForm = ({ user, roles, onSubmit, onCancel }) => {
                     </button>
                     {user && (
                         <button
-                            className={`px-4 py-2 text-sm font-medium border-b-2 ${
+                            className={`px-6 py-3 text-body font-medium border-b-2 transition-all duration-200 ${
                                 activeTab === 'permissions'
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    ? 'border-primary text-primary bg-background'
+                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
                             }`}
                             onClick={() => setActiveTab('permissions')}
                         >
@@ -267,21 +267,21 @@ const UserForm = ({ user, roles, onSubmit, onCancel }) => {
                     )}
                 </div>
 
-                {/* Tab Content Container */}
-                <div className='flex-1 overflow-y-auto p-1'>
-                    {/* Basic Information Tab */}
+                {/* Enhanced Tab Content Container */}
+                <div className='flex-1 overflow-y-auto p-6'>
+                    {/* Enhanced Basic Information Tab */}
                     {activeTab === 'basic' && (
-                        <form onSubmit={handleSubmit} className='space-y-4'>
+                        <form onSubmit={handleSubmit} className='space-y-6 animate-fade-in'>
                             {error && (
-                                <div className='bg-red-50 border border-red-200 rounded-md p-3'>
-                                    <p className='text-sm text-red-800'>{error}</p>
+                                <div className='bg-destructive/10 border border-destructive/20 rounded-lg p-4 animate-fade-in'>
+                                    <p className='text-body text-destructive font-medium'>{error}</p>
                                 </div>
                             )}
 
-                            {/* Name Fields */}
+                            {/* Enhanced Name Fields */}
                             <div className='grid grid-cols-2 gap-4'>
                                 <div>
-                                    <label className='block text-sm font-medium text-gray-700 mb-1'>
+                                    <label className='block text-body font-semibold text-foreground mb-2'>
                                         First Name *
                                     </label>
                                     <Input
@@ -290,11 +290,11 @@ const UserForm = ({ user, roles, onSubmit, onCancel }) => {
                                         onChange={(e) =>
                                             handleInputChange('firstName', e.target.value)
                                         }
-                                        className={errors.firstName ? 'border-red-500' : ''}
+                                        className={`input-enhanced ${errors.firstName ? 'border-destructive focus:border-destructive' : ''}`}
                                         placeholder='John'
                                     />
                                     {errors.firstName && (
-                                        <p className='text-xs text-red-600 mt-1'>
+                                        <p className='text-small text-destructive mt-1 font-medium'>
                                             {errors.firstName}
                                         </p>
                                     )}
@@ -577,11 +577,11 @@ const UserForm = ({ user, roles, onSubmit, onCancel }) => {
                     )}
                 </div>
 
-                <DialogFooter>
-                    <Button variant='outline' onClick={onCancel} disabled={loading}>
+                <DialogFooter className='pt-4 border-t border-border bg-muted/20'>
+                    <Button variant='outline' onClick={onCancel} disabled={loading} className='btn-enhanced'>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} disabled={loading}>
+                    <Button onClick={handleSubmit} disabled={loading} className='btn-enhanced'>
                         {loading && <LoaderIcon className='w-4 h-4 mr-2 animate-spin' />}
                         {user ? 'Update User' : 'Create User'}
                     </Button>

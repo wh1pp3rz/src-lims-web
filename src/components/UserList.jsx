@@ -37,42 +37,42 @@ const UserList = ({
         });
     };
 
-    const getRoleBadgeColor = (role) => {
+    const getRoleBadgeClass = (role) => {
         switch (role?.toLowerCase()) {
             case 'admin':
-                return 'default';
+                return 'bg-primary/10 text-primary border-primary/20';
             case 'manager':
-                return 'default';
+                return 'bg-info/10 text-info border-info/20';
             case 'technician':
-                return 'secondary';
+                return 'bg-secondary/10 text-secondary-foreground border-border';
             case 'client':
-                return 'secondary';
+                return 'bg-muted text-muted-foreground border-border';
             default:
-                return 'secondary';
+                return 'bg-muted text-muted-foreground border-border';
         }
     };
 
-    const getStatusBadgeColor = (isActive) => {
-        return isActive ? 'success' : 'warning';
+    const getStatusBadgeClass = (isActive) => {
+        return isActive ? 'status-active' : 'status-inactive';
     };
 
     if (loading) {
         return (
-            <div className='flex items-center justify-center py-12'>
-                <LoaderIcon className='h-6 w-6 animate-spin text-gray-400' />
-                <span className='ml-2 text-gray-600'>Loading users...</span>
+            <div className='flex items-center justify-center py-16 animate-fade-in'>
+                <LoaderIcon className='h-6 w-6 animate-spin text-primary mr-3' />
+                <span className='text-body text-muted'>Loading users...</span>
             </div>
         );
     }
 
     if (!users || users.length === 0) {
         return (
-            <div className='text-center py-12'>
-                <div className='mx-auto flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-4'>
-                    <UserCheckIcon className='w-6 h-6 text-gray-400' />
+            <div className='text-center py-16 animate-fade-in'>
+                <div className='mx-auto flex items-center justify-center w-16 h-16 bg-muted/50 rounded-full mb-6'>
+                    <UserCheckIcon className='w-8 h-8 text-muted-foreground' />
                 </div>
-                <h3 className='text-lg font-medium text-gray-900 mb-2'>No users found</h3>
-                <p className='text-gray-600'>No users match your current search criteria.</p>
+                <h3 className='text-heading-3 text-foreground mb-3'>No users found</h3>
+                <p className='text-body text-muted max-w-md mx-auto'>No users match your current search criteria. Try adjusting your filters or search terms.</p>
             </div>
         );
     }
@@ -81,76 +81,78 @@ const UserList = ({
     const endIndex = Math.min(currentPage * usersPerPage, totalUsers);
 
     return (
-        <div className='space-y-4'>
-            {/* Table */}
-            <div className='rounded-md border'>
-                <Table>
+        <div className='space-y-6 animate-fade-in'>
+            {/* Enhanced Table */}
+            <div className='rounded-lg border border-border overflow-hidden'>
+                <Table className='table-enhanced'>
                     <TableHeader>
-                        <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Role</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Created</TableHead>
-                            <TableHead>Last Login</TableHead>
-                            <TableHead className='text-right'>Actions</TableHead>
+                        <TableRow className='bg-muted/50'>
+                            <TableHead className='font-semibold text-foreground'>Name</TableHead>
+                            <TableHead className='font-semibold text-foreground'>Email</TableHead>
+                            <TableHead className='font-semibold text-foreground'>Role</TableHead>
+                            <TableHead className='font-semibold text-foreground'>Status</TableHead>
+                            <TableHead className='font-semibold text-foreground'>Created</TableHead>
+                            <TableHead className='font-semibold text-foreground'>Last Login</TableHead>
+                            <TableHead className='text-right font-semibold text-foreground'>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {users.map((user) => (
-                            <TableRow key={user.id}>
+                        {users.map((user, index) => (
+                            <TableRow 
+                                key={user.id} 
+                                className='group'
+                                style={{ animationDelay: `${index * 0.05}s` }}
+                            >
                                 <TableCell className='font-medium'>
-                                    <div>
-                                        <div className='font-semibold text-gray-900'>
-                                            {`${user.firstName || ''} ${user.lastName || ''}`.trim() ||
-                                                user.fullName ||
-                                                user.name ||
-                                                user.username}
+                                    <div className='flex items-center gap-3'>
+                                        <div className='flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-sm'>
+                                            {(user.firstName?.[0] || user.name?.[0] || user.username?.[0] || 'U').toUpperCase()}
                                         </div>
-                                        {user.username &&
-                                            (`${user.firstName || ''} ${user.lastName || ''}`.trim() ||
-                                                user.fullName ||
-                                                user.name) && (
-                                                <div className='text-sm text-gray-500'>
-                                                    @{user.username}
-                                                </div>
-                                            )}
+                                        <div>
+                                            <div className='font-semibold text-foreground text-body'>
+                                                {`${user.firstName || ''} ${user.lastName || ''}`.trim() ||
+                                                    user.fullName ||
+                                                    user.name ||
+                                                    user.username}
+                                            </div>
+                                            {user.username &&
+                                                (`${user.firstName || ''} ${user.lastName || ''}`.trim() ||
+                                                    user.fullName ||
+                                                    user.name) && (
+                                                    <div className='text-small text-muted'>
+                                                        @{user.username}
+                                                    </div>
+                                                )}
+                                        </div>
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <div className='text-sm text-gray-900'>{user.email}</div>
+                                    <div className='text-body text-foreground'>{user.email}</div>
                                     {user.emailVerified && (
-                                        <div className='text-xs text-green-600'>Verified</div>
+                                        <div className='text-small text-success font-medium'>Verified</div>
                                     )}
                                 </TableCell>
                                 <TableCell>
-                                    <Badge variant={getRoleBadgeColor(user.role)}>
-                                        {user.role?.charAt(0).toUpperCase() + user.role?.slice(1) ||
-                                            'N/A'}
-                                    </Badge>
+                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getRoleBadgeClass(user.role)}`}>
+                                        {user.role?.charAt(0).toUpperCase() + user.role?.slice(1) || 'N/A'}
+                                    </span>
                                 </TableCell>
                                 <TableCell>
-                                    <Badge
-                                        variant={getStatusBadgeColor(
-                                            user.isActive ?? user.active ?? true
-                                        )}
-                                    >
-                                        {(user.isActive ?? user.active ?? true)
-                                            ? 'Active'
-                                            : 'Inactive'}
-                                    </Badge>
+                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusBadgeClass(user.isActive ?? user.active ?? true)}`}>
+                                        {(user.isActive ?? user.active ?? true) ? 'Active' : 'Inactive'}
+                                    </span>
                                 </TableCell>
-                                <TableCell className='text-sm text-gray-600'>
+                                <TableCell className='text-small text-muted'>
                                     {formatDate(user.createdAt)}
                                 </TableCell>
-                                <TableCell className='text-sm text-gray-600'>
+                                <TableCell className='text-small text-muted'>
                                     {user.lastLogin ? formatDate(user.lastLogin) : 'Never'}
                                 </TableCell>
                                 <TableCell className='text-right'>
-                                    <div className='flex items-center justify-end gap-2'>
+                                    <div className='flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
                                         {/* Toggle Status Button */}
                                         <Button
-                                            variant='ghost'
+                                            variant='outline'
                                             size='sm'
                                             onClick={() =>
                                                 onToggleStatus(
@@ -158,7 +160,11 @@ const UserList = ({
                                                     user.isActive ?? user.active ?? true
                                                 )
                                             }
-                                            className='h-8 w-8 p-0'
+                                            className={`h-8 w-8 p-0 btn-enhanced border-border/40 ${
+                                                (user.isActive ?? user.active ?? true) 
+                                                    ? 'hover:bg-warning/10 hover:border-warning/30' 
+                                                    : 'hover:bg-success/10 hover:border-success/30'
+                                            }`}
                                             title={
                                                 (user.isActive ?? user.active ?? true)
                                                     ? 'Deactivate user'
@@ -166,37 +172,37 @@ const UserList = ({
                                             }
                                         >
                                             {(user.isActive ?? user.active ?? true) ? (
-                                                <UserXIcon className='h-4 w-4 text-orange-600' />
+                                                <UserXIcon className='h-4 w-4 text-warning' />
                                             ) : (
-                                                <UserCheckIcon className='h-4 w-4 text-green-600' />
+                                                <UserCheckIcon className='h-4 w-4 text-success' />
                                             )}
                                         </Button>
 
                                         {/* Edit Button */}
                                         {hasEditPermission && (
                                             <Button
-                                                variant='ghost'
+                                                variant='outline'
                                                 size='sm'
                                                 onClick={() => onEdit(user)}
-                                                className='h-8 w-8 p-0'
+                                                className='h-8 w-8 p-0 btn-enhanced hover:bg-primary/10 border-border/40 hover:border-primary/30'
                                                 title='Edit user'
                                             >
-                                                <EditIcon className='h-4 w-4 text-blue-600' />
+                                                <EditIcon className='h-4 w-4 text-primary' />
                                             </Button>
                                         )}
 
-                                        {/* Delete Button (permanent soft delete) */}
+                                        {/* Delete Button */}
                                         {hasDeletePermission && (
                                             <Button
-                                                variant='ghost'
+                                                variant='outline'
                                                 size='sm'
                                                 onClick={() =>
                                                     onDelete(user.id || user._id || user.userId)
                                                 }
-                                                className='h-8 w-8 p-0'
+                                                className='h-8 w-8 p-0 btn-enhanced hover:bg-destructive/10 border-border/40 hover:border-destructive/30'
                                                 title='Permanently delete user'
                                             >
-                                                <TrashIcon className='h-4 w-4 text-red-600' />
+                                                <TrashIcon className='h-4 w-4 text-destructive' />
                                             </Button>
                                         )}
                                     </div>
@@ -207,11 +213,13 @@ const UserList = ({
                 </Table>
             </div>
 
-            {/* Pagination */}
+            {/* Enhanced Pagination */}
             {totalPages > 1 && (
-                <div className='flex items-center justify-between'>
-                    <div className='text-sm text-gray-700'>
-                        Showing {startIndex} to {endIndex} of {totalUsers} users
+                <div className='flex items-center justify-between pt-4 border-t border-border'>
+                    <div className='text-small text-muted'>
+                        Showing <span className='font-medium text-foreground'>{startIndex}</span> to{' '}
+                        <span className='font-medium text-foreground'>{endIndex}</span> of{' '}
+                        <span className='font-medium text-foreground'>{totalUsers}</span> users
                     </div>
 
                     <div className='flex items-center gap-2'>
@@ -220,7 +228,7 @@ const UserList = ({
                             size='sm'
                             onClick={() => onPageChange(currentPage - 1)}
                             disabled={currentPage === 1}
-                            className='h-8 w-8 p-0'
+                            className='h-8 w-8 p-0 btn-enhanced'
                         >
                             <ChevronLeftIcon className='h-4 w-4' />
                         </Button>
@@ -237,7 +245,7 @@ const UserList = ({
                                 if (!shouldShow) {
                                     if (page === currentPage - 2 || page === currentPage + 2) {
                                         return (
-                                            <span key={page} className='px-2 text-gray-400'>
+                                            <span key={page} className='px-2 text-muted-foreground text-small'>
                                                 ...
                                             </span>
                                         );
@@ -251,7 +259,7 @@ const UserList = ({
                                         variant={isCurrentPage ? 'default' : 'outline'}
                                         size='sm'
                                         onClick={() => onPageChange(page)}
-                                        className='h-8 w-8 p-0'
+                                        className='h-8 w-8 p-0 btn-enhanced'
                                     >
                                         {page}
                                     </Button>
@@ -264,7 +272,7 @@ const UserList = ({
                             size='sm'
                             onClick={() => onPageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                            className='h-8 w-8 p-0'
+                            className='h-8 w-8 p-0 btn-enhanced'
                         >
                             <ChevronRightIcon className='h-4 w-4' />
                         </Button>
