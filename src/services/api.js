@@ -3,6 +3,22 @@ import { navigateTo } from './navigationService.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://src-lims-api.code.orb.local/api';
 
+// Token refresh state management
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
+        }
+    });
+    
+    failedQueue = [];
+};
+
 // Create axios instance
 export const api = axios.create({
     baseURL: API_BASE_URL,
@@ -25,7 +41,7 @@ api.interceptors.request.use(
     }
 );
 
-// Response interceptor to handle token refresh
+// Response interceptor to handle token refresh with request queuing
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -36,7 +52,20 @@ api.interceptors.response.use(
             !originalRequest._retry && 
             !originalRequest.url?.includes('/auth/')) {
             
+            // If already refreshing, queue this request
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                }).then(token => {
+                    originalRequest.headers.Authorization = `Bearer ${token}`;
+                    return api(originalRequest);
+                }).catch(err => {
+                    return Promise.reject(err);
+                });
+            }
+
             originalRequest._retry = true;
+            isRefreshing = true;
 
             try {
                 const refreshToken = localStorage.getItem('refreshToken');
@@ -63,12 +92,18 @@ api.interceptors.response.use(
 
                 console.log('Token refresh successful');
 
-                // Update the authorization header and retry
+                // Process queued requests
+                processQueue(null, tokens.accessToken);
+
+                // Update the authorization header and retry original request
                 originalRequest.headers.Authorization = `Bearer ${tokens.accessToken}`;
                 return api(originalRequest);
 
             } catch (refreshError) {
                 console.error('Token refresh failed:', refreshError);
+                
+                // Process queued requests with error
+                processQueue(refreshError, null);
                 
                 // Clear all auth data
                 localStorage.removeItem('accessToken');
@@ -86,6 +121,8 @@ api.interceptors.response.use(
                 
                 // Return a rejected promise with clear error
                 return Promise.reject(new Error('Session expired. Please log in again.'));
+            } finally {
+                isRefreshing = false;
             }
         }
 
