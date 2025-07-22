@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import useAuth from '@/hooks/useAuth.js';
 import { userService } from '../services/userService.js';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card.jsx';
@@ -41,13 +41,13 @@ const UserManagement = () => {
     // Available roles
     const [roles, setRoles] = useState([]);
 
-    // Check if user has permission
-    const hasPermission = (permission) => {
+    // Check if user has permission - wrapped in useCallback for stability
+    const hasPermission = useCallback((permission) => {
         return user?.permissions?.includes(permission) || user?.role?.toLowerCase() === 'admin';
-    };
+    }, [user?.permissions, user?.role]);
 
-    // Load users
-    const loadUsers = async (filters = {}) => {
+    // Load users - wrapped in useCallback to prevent infinite re-renders
+    const loadUsers = useCallback(async (filters = {}) => {
         try {
             setLoading(true);
             setError(null);
@@ -108,34 +108,31 @@ const UserManagement = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [currentPage, usersPerPage, searchTerm, roleFilter, statusFilter]);
 
-    // Load roles
-    const loadRoles = async () => {
+    // Load roles - wrapped in useCallback
+    const loadRoles = useCallback(async () => {
         try {
             const response = await userService.getRoles();
             setRoles(response.roles || []);
         } catch (err) {
             console.error('Error loading roles:', err);
         }
-    };
+    }, []);
 
-    // Initial load
+    // Initial load and load when dependencies change
     useEffect(() => {
         if (hasPermission('user_management')) {
             loadUsers();
+        }
+    }, [hasPermission, loadUsers]); // Include stable function references
+
+    // Load roles only once on mount
+    useEffect(() => {
+        if (hasPermission('user_management')) {
             loadRoles();
         }
-    }, [currentPage]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    // Filter users when filters change
-    useEffect(() => {
-        if (searchTerm || roleFilter || statusFilter) {
-            loadUsers();
-        } else if (!searchTerm && !roleFilter && !statusFilter) {
-            loadUsers();
-        }
-    }, [searchTerm, roleFilter, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [hasPermission, loadRoles]); // Include stable function references
 
     // Handle user creation/edit
     const handleUserSubmit = async (userData) => {
