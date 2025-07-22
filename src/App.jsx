@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext.jsx';
+import NavigationProvider from './components/NavigationProvider.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Layout from './components/Layout.jsx';
 import Login from './pages/Login.jsx';
@@ -11,8 +12,9 @@ function App() {
     return (
         <AuthProvider>
             <Router>
-                <div className='App'>
-                    <Routes>
+                <NavigationProvider>
+                    <div className='App'>
+                        <Routes>
                         <Route path='/login' element={<Login />} />
                         <Route path='/' element={<Navigate to='/dashboard' replace />} />
                         <Route
@@ -96,8 +98,9 @@ function App() {
                                 </ProtectedRoute>
                             }
                         />
-                    </Routes>
-                </div>
+                        </Routes>
+                    </div>
+                </NavigationProvider>
             </Router>
         </AuthProvider>
     );
