@@ -50,9 +50,16 @@ export const AuthProvider = ({ children }) => {
                 const storedUser = authService.getStoredUser();
 
                 if (storedUser && authService.isAuthenticated()) {
-                    // Check if tokens are still valid
-                    const isValid = await checkTokenValidity();
-                    if (isValid) {
+                    // Check if tokens are still valid (inline to avoid dependency issues)
+                    const tokenStatus = getTokenStatus();
+                    
+                    // If we should logout (no refresh token or refresh token expired)
+                    if (tokenStatus.shouldLogout) {
+                        // Clean up localStorage
+                        localStorage.removeItem('accessToken');
+                        localStorage.removeItem('refreshToken');
+                        localStorage.removeItem('user');
+                    } else {
                         setUser(storedUser);
                     }
                 }
@@ -65,7 +72,7 @@ export const AuthProvider = ({ children }) => {
         };
 
         initializeAuth();
-    }, [checkTokenValidity]);
+    }, []); // Empty dependency array - only run on mount
 
     // Periodic token validity check
     useEffect(() => {
