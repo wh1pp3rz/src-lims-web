@@ -7,6 +7,7 @@ import Layout from './components/Layout.jsx';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import UserManagement from './pages/UserManagement.jsx';
+import AuditLogs from './pages/AuditLogs.jsx';
 
 function App() {
     return (
@@ -79,6 +80,16 @@ function App() {
                                 <ProtectedRoute requiredPermissions={['user_management']}>
                                     <Layout>
                                         <UserManagement />
+                                    </Layout>
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path='/audit-logs'
+                            element={
+                                <ProtectedRoute requiredPermissions={['view_audit_logs']}>
+                                    <Layout>
+                                        <AuditLogs />
                                     </Layout>
                                 </ProtectedRoute>
                             }
