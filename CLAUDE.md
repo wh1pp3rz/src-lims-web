@@ -42,7 +42,7 @@ This is the frontend web application for the Scientific Research Council LIMS (L
 - `tokenUtils.js` - Token validation utilities
 
 ### Testing Credentials
-- Email: `admin@example.com`
+- Email: `rgowdie@src.gov.jm`
 - Password: `AdminPass123!`
 
 ## Common Issues

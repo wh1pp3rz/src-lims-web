@@ -11,6 +11,7 @@ import {
     SettingsIcon,
     LogOutIcon,
     XIcon,
+    ShieldCheckIcon,
 } from 'lucide-react';
 import srcLogo from '../assets/src-logo.webp';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -27,6 +28,7 @@ const Layout = ({ children }) => {
         { name: 'Test Results', href: '/results', icon: ClipboardListIcon },
         { name: 'Reports', href: '/reports', icon: FileTextIcon },
         { name: 'User Management', href: '/users', icon: UsersIcon, permission: 'user_management' },
+        { name: 'Audit Logs', href: '/audit-logs', icon: ShieldCheckIcon, permission: 'view_audit_logs' },
         { name: 'Settings', href: '/settings', icon: SettingsIcon },
     ];
 
