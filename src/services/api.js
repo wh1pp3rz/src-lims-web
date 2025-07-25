@@ -73,7 +73,7 @@ api.interceptors.response.use(
                     throw new Error('No refresh token available');
                 }
 
-                console.log('Attempting token refresh...');
+                // Attempting token refresh
                 
                 // Use a separate axios instance to avoid interceptor loops
                 const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
@@ -90,7 +90,7 @@ api.interceptors.response.use(
                 localStorage.setItem('accessToken', tokens.accessToken);
                 localStorage.setItem('refreshToken', tokens.refreshToken);
 
-                console.log('Token refresh successful');
+                // Token refresh successful
 
                 // Process queued requests
                 processQueue(null, tokens.accessToken);
@@ -100,7 +100,7 @@ api.interceptors.response.use(
                 return api(originalRequest);
 
             } catch (refreshError) {
-                console.error('Token refresh failed:', refreshError);
+                // Token refresh failed
                 
                 // Process queued requests with error
                 processQueue(refreshError, null);
@@ -113,9 +113,9 @@ api.interceptors.response.use(
                 // Navigate to login
                 try {
                     navigateTo('/login', { replace: true });
-                } catch (navError) {
+                } catch {
                     // Fallback if navigation service fails
-                    console.error('Navigation failed, using window.location:', navError);
+                    // Navigation failed, using window.location fallback
                     window.location.href = '/login';
                 }
                 

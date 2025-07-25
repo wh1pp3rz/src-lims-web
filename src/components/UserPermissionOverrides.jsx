@@ -69,8 +69,8 @@ const UserPermissionOverrides = ({
             setReason('');
             setExpirationDate('');
             setShowAddDialog(false);
-        } catch (error) {
-            console.error('Error adding permission override:', error);
+        } catch {
+            // Error adding permission override
         } finally {
             setLoading(false);
         }
@@ -81,8 +81,8 @@ const UserPermissionOverrides = ({
         setLoading(true);
         try {
             await onRemoveOverride(userId, permissionId, type);
-        } catch (error) {
-            console.error('Error removing permission override:', error);
+        } catch {
+            // Error removing permission override
         } finally {
             setLoading(false);
         }

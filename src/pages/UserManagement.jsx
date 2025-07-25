@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import useAuth from '@/hooks/useAuth.js';
 import { userService } from '../services/userService.js';
+import { hasPermission } from '@/utils/permissions.js';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card.jsx';
 import { Button } from '../components/ui/button.jsx';
 import { Input } from '../components/ui/input.jsx';
@@ -42,9 +43,9 @@ const UserManagement = () => {
     const [roles, setRoles] = useState([]);
 
     // Check if user has permission - wrapped in useCallback for stability
-    const hasPermission = useCallback((permission) => {
-        return user?.permissions?.includes(permission) || user?.role?.toLowerCase() === 'admin';
-    }, [user?.permissions, user?.role]);
+    const checkPermission = useCallback((permission) => {
+        return hasPermission(user, permission);
+    }, [user]);
 
     // Load users - wrapped in useCallback to prevent infinite re-renders
     const loadUsers = useCallback(async (filters = {}) => {
@@ -67,7 +68,7 @@ const UserManagement = () => {
             };
 
             const response = await userService.getUsers(params);
-            console.log('Users API Response:', response);
+            // Users API Response received
 
             // Handle different possible response structures
             let userList = [];
@@ -89,19 +90,17 @@ const UserManagement = () => {
                 totalCount = response.total || response.count || response.data.length;
                 pages = response.totalPages || response.pagination?.totalPages || 1;
             } else {
-                console.warn('Unexpected API response structure:', response);
+                // Unexpected API response structure
             }
 
-            console.log('Processed users:', userList);
-            console.log('Total count:', totalCount);
+            // Processed users and total count
 
             setUsers(userList);
             setFilteredUsers(userList);
             setTotalPages(pages);
             setTotalUsers(totalCount);
         } catch (err) {
-            console.error('Error loading users:', err);
-            console.error('Error details:', err.response?.data || err.message);
+            // Error loading users
             setError(
                 `Failed to load users: ${err.response?.data?.message || err.message || 'Unknown error'}`
             );
@@ -115,24 +114,24 @@ const UserManagement = () => {
         try {
             const response = await userService.getRoles();
             setRoles(response.roles || []);
-        } catch (err) {
-            console.error('Error loading roles:', err);
+        } catch {
+            // Error loading roles
         }
     }, []);
 
     // Initial load and load when dependencies change
     useEffect(() => {
-        if (hasPermission('user_management')) {
+        if (checkPermission('user_management')) {
             loadUsers();
         }
-    }, [hasPermission, loadUsers]); // Include stable function references
+    }, [checkPermission, loadUsers]); // Include stable function references
 
     // Load roles only once on mount
     useEffect(() => {
-        if (hasPermission('user_management')) {
+        if (checkPermission('user_management')) {
             loadRoles();
         }
-    }, [hasPermission, loadRoles]); // Include stable function references
+    }, [checkPermission, loadRoles]); // Include stable function references
 
     // Handle user creation/edit
     const handleUserSubmit = async (userData) => {
@@ -159,8 +158,7 @@ const UserManagement = () => {
 
     // Handle user edit
     const handleEditUser = (user) => {
-        console.log('Editing user:', user);
-        console.log('User ID fields:', { id: user.id, _id: user._id, userId: user.userId });
+        // Editing user
         setEditingUser(user);
         setShowUserForm(true);
     };
@@ -218,7 +216,7 @@ const UserManagement = () => {
     };
 
     // Check permissions
-    if (!hasPermission('user_management')) {
+    if (!checkPermission('user_management')) {
         return (
             <div className='text-center py-16 animate-fade-in'>
                 <div className='mx-auto flex items-center justify-center w-16 h-16 bg-destructive/10 rounded-full mb-6'>
@@ -240,7 +238,7 @@ const UserManagement = () => {
                     <h1 className='text-heading-1 text-foreground'>User Management</h1>
                     <p className='text-body text-muted mt-2'>Manage system users and their permissions</p>
                 </div>
-                {hasPermission('user_create') && (
+                {checkPermission('user_create') && (
                     <Button onClick={() => setShowUserForm(true)} className='gap-2 btn-enhanced'>
                         <PlusIcon className='h-4 w-4' />
                         Add User
@@ -338,7 +336,7 @@ const UserManagement = () => {
                                 <SelectItem value=''>All Roles</SelectItem>
                                 {roles.map((role) => (
                                     <SelectItem key={role} value={role}>
-                                        {role.charAt(0).toUpperCase() + role.slice(1)}
+                                        {typeof role === 'string' ? role.charAt(0).toUpperCase() + role.slice(1) : role}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -388,8 +386,8 @@ const UserManagement = () => {
                             onEdit={handleEditUser}
                             onDelete={handleDeleteUser}
                             onToggleStatus={handleToggleStatus}
-                            hasEditPermission={hasPermission('user_edit')}
-                            hasDeletePermission={hasPermission('user_delete')}
+                            hasEditPermission={checkPermission('user_edit')}
+                            hasDeletePermission={checkPermission('user_delete')}
                             currentPage={currentPage}
                             totalPages={totalPages}
                             onPageChange={setCurrentPage}

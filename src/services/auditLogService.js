@@ -24,22 +24,21 @@ export const auditLogService = {
         return response.data;
     },
 
-    // Get unique values for filter dropdowns
+    // Get unique values for filter dropdowns based on user permissions
     async getFilterOptions() {
-        // This would typically be separate endpoints, but we can derive from the model
-        // For now, we'll return static options based on the AuditLog model
-        return {
-            actions: [
-                'LOGIN', 'LOGOUT', 'LOGIN_FAILED',
-                'USER_CREATED', 'USER_UPDATED', 'USER_DELETED',
-                'ROLE_CHANGED', 'PERMISSION_GRANTED', 'PERMISSION_REVOKED',
-                'ACCESS_DENIED', 'CREATE', 'READ', 'UPDATE', 'DELETE',
-                'SYSTEM_BACKUP', 'SYSTEM_RESTORE', 'UNKNOWN'
-            ],
-            resources: [
-                'USER', 'AUTH', 'SYSTEM', 'SAMPLE', 'TEST', 'REPORT'
-            ]
-        };
+        try {
+            const response = await api.get(`${AUDIT_LOGS_ENDPOINT}/filter-options`);
+            return response.data;
+        } catch {
+            // Error fetching filter options, using fallback
+            // Fallback to basic options if API fails
+            return {
+                actions: ['CREATE', 'READ', 'UPDATE', 'DELETE'],
+                resources: ['SAMPLE', 'TEST', 'REPORT'],
+                sensitivityLevels: ['basic'],
+                userAuditLevel: 'basic'
+            };
+        }
     },
 
     // Helper method to get date presets for filtering

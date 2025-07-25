@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import useAuth from '@/hooks/useAuth.js';
+import { hasAnyPermission } from '@/utils/permissions.js';
 
 const ProtectedRoute = ({ children, requiredPermissions = [] }) => {
     const { user, loading } = useAuth();
@@ -20,12 +21,9 @@ const ProtectedRoute = ({ children, requiredPermissions = [] }) => {
 
     // Check permissions if required
     if (requiredPermissions.length > 0) {
-        const hasPermission = requiredPermissions.some(
-            (permission) =>
-                user.permissions?.includes(permission) || user.role?.toLowerCase() === 'admin'
-        );
+        const hasRequiredPermission = hasAnyPermission(user, requiredPermissions);
 
-        if (!hasPermission) {
+        if (!hasRequiredPermission) {
             return (
                 <div className='flex items-center justify-center min-h-screen'>
                     <div className='text-center'>

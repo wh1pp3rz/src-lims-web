@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
     // Force logout when tokens are expired
     const forceLogout = useCallback(async () => {
-        console.log('Forcing logout due to expired tokens');
+        // Forcing logout due to expired tokens
         setUser(null);
         setError(null);
         
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }) => {
                     }
                 }
             } catch (error) {
-                console.error('Auth initialization error:', error);
+                // Auth initialization error
                 setError(error);
             } finally {
                 setLoading(false);
@@ -112,8 +112,8 @@ export const AuthProvider = ({ children }) => {
             await authService.logout();
             setUser(null);
             setError(null);
-        } catch (error) {
-            console.error('Logout error:', error);
+        } catch {
+            // Logout error
         } finally {
             setLoading(false);
         }

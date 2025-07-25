@@ -15,7 +15,12 @@ import auditLogService from '../services/auditLogService.js';
 
 const AuditLogFilters = ({ filters, onFiltersChange, onClearFilters }) => {
     const [showAdvanced, setShowAdvanced] = useState(false);
-    const [filterOptions, setFilterOptions] = useState({ actions: [], resources: [] });
+    const [filterOptions, setFilterOptions] = useState({ 
+        actions: [], 
+        resources: [], 
+        sensitivityLevels: [],
+        userAuditLevel: 'basic'
+    });
     const [datePresets] = useState(auditLogService.getDatePresets());
 
     useEffect(() => {
@@ -23,8 +28,8 @@ const AuditLogFilters = ({ filters, onFiltersChange, onClearFilters }) => {
             try {
                 const options = await auditLogService.getFilterOptions();
                 setFilterOptions(options);
-            } catch (error) {
-                console.error('Failed to load filter options:', error);
+            } catch {
+                // Failed to load filter options
             }
         };
         loadFilterOptions();
@@ -55,6 +60,15 @@ const AuditLogFilters = ({ filters, onFiltersChange, onClearFilters }) => {
         return filters.search || filters.action || filters.resource || 
                filters.userId || filters.success !== undefined || 
                filters.startDate || filters.endDate;
+    };
+
+    const getSensitivityLevelBadge = (level) => {
+        const badges = {
+            basic: { label: 'Basic', color: 'bg-green-100 text-green-800' },
+            security: { label: 'Security', color: 'bg-yellow-100 text-yellow-800' },
+            system: { label: 'System', color: 'bg-red-100 text-red-800' }
+        };
+        return badges[level] || badges.basic;
     };
 
     return (
@@ -151,6 +165,21 @@ const AuditLogFilters = ({ filters, onFiltersChange, onClearFilters }) => {
                 {/* Advanced Filters */}
                 {showAdvanced && (
                     <div className="border-t pt-4 space-y-4">
+                        {/* User Access Level Indicator */}
+                        {filterOptions.userAuditLevel && (
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Your Audit Access Level
+                                </label>
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSensitivityLevelBadge(filterOptions.userAuditLevel).color}`}>
+                                    {getSensitivityLevelBadge(filterOptions.userAuditLevel).label}
+                                </span>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    You can view logs up to {filterOptions.userAuditLevel} sensitivity level
+                                </p>
+                            </div>
+                        )}
+
                         {/* Date Range Row */}
                         <div className="flex flex-wrap gap-4 items-end">
                             <div className="min-w-40">

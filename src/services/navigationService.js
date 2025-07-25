@@ -26,8 +26,8 @@ export const navigateTo = (path, options = {}) => {
     if (globalNavigate) {
         try {
             globalNavigate(path, options);
-        } catch (error) {
-            console.error('Error during React Router navigation:', error);
+        } catch {
+            // Navigation error handled silently
             // Fall back to window.location for string paths
             if (typeof path === 'string') {
                 window.location.href = path;
@@ -35,7 +35,7 @@ export const navigateTo = (path, options = {}) => {
         }
     } else {
         // Fallback to window.location if navigate is not available
-        console.warn('React Router navigate not available, falling back to window.location');
+        // Fallback to window.location when React Router navigate not available
         if (typeof path === 'string') {
             window.location.href = path;
         } else {

@@ -99,7 +99,7 @@ const UserList = ({
                     <TableBody>
                         {users.map((user, index) => (
                             <TableRow 
-                                key={user.id} 
+                                key={user.id || user._id || user.userId || `user-${index}`} 
                                 className='group'
                                 style={{ animationDelay: `${index * 0.05}s` }}
                             >
@@ -245,7 +245,7 @@ const UserList = ({
                                 if (!shouldShow) {
                                     if (page === currentPage - 2 || page === currentPage + 2) {
                                         return (
-                                            <span key={page} className='px-2 text-muted-foreground text-small'>
+                                            <span key={`ellipsis-${page}`} className='px-2 text-muted-foreground text-small'>
                                                 ...
                                             </span>
                                         );
@@ -255,7 +255,7 @@ const UserList = ({
 
                                 return (
                                     <Button
-                                        key={page}
+                                        key={`page-${page}`}
                                         variant={isCurrentPage ? 'default' : 'outline'}
                                         size='sm'
                                         onClick={() => onPageChange(page)}
