@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import useAuth from '@/hooks/useAuth.js';
 import auditLogService from '../services/auditLogService.js';
+import { hasAuditPermission } from '@/utils/permissions.js';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card.jsx';
 import { Button } from '../components/ui/button.jsx';
 import { ShieldCheckIcon, RefreshCwIcon, AlertTriangleIcon } from 'lucide-react';
@@ -31,9 +32,8 @@ const AuditLogs = () => {
 
     // Check if user has permission to view audit logs
     const hasPermission = useCallback(() => {
-        return user?.permissions?.includes('view_audit_logs') || 
-               user?.role?.toLowerCase() === 'admin';
-    }, [user?.permissions, user?.role]);
+        return hasAuditPermission(user);
+    }, [user]);
 
     // Load audit logs with current filters
     const loadAuditLogs = useCallback(async (currentFilters = filters) => {
@@ -54,7 +54,7 @@ const AuditLogs = () => {
             setTotalPages(response.totalPages || 1);
             setTotalLogs(response.totalLogs || 0);
         } catch (err) {
-            console.error('Failed to load audit logs:', err);
+            // Failed to load audit logs
             setError(err.response?.data?.message || 'Failed to load audit logs. Please try again.');
             setLogs([]);
         } finally {

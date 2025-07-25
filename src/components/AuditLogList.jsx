@@ -41,6 +41,15 @@ const AuditLogList = ({
         });
     };
 
+    const getSensitivityLevelBadge = (level) => {
+        const badges = {
+            basic: { label: 'Basic', class: 'bg-green-100 text-green-800 border-green-200' },
+            security: { label: 'Security', class: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+            system: { label: 'System', class: 'bg-red-100 text-red-800 border-red-200' }
+        };
+        return badges[level] || badges.basic;
+    };
+
     const getActionBadgeClass = (action) => {
         if (action?.includes('LOGIN') || action?.includes('AUTH')) {
             return 'bg-blue-100 text-blue-800 border-blue-200';
@@ -153,6 +162,7 @@ const AuditLogList = ({
                             <TableHead className="w-24">Status</TableHead>
                             <TableHead className="w-28">Action</TableHead>
                             <TableHead className="w-24">Resource</TableHead>
+                            <TableHead className="w-20">Level</TableHead>
                             <TableHead>User</TableHead>
                             <TableHead className="w-32">IP Address</TableHead>
                             <TableHead className="w-16">Details</TableHead>
@@ -191,6 +201,11 @@ const AuditLogList = ({
                                             {getResourceIcon(log.resource)}
                                             <span className="ml-2 text-sm">{log.resource}</span>
                                         </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge className={`text-xs ${getSensitivityLevelBadge(log.sensitivityLevel).class}`}>
+                                            {getSensitivityLevelBadge(log.sensitivityLevel).label}
+                                        </Badge>
                                     </TableCell>
                                     <TableCell>
                                         <div className="text-sm">

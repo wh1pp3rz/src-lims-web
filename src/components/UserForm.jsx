@@ -59,8 +59,8 @@ const UserForm = ({ user, roles, onSubmit, onCancel }) => {
 
                 setPermissions(permissionsData.permissions || []);
                 setCustomRoles(rolesData.roles || []);
-            } catch (err) {
-                console.error('Error loading permissions and roles:', err);
+            } catch {
+                // Error loading permissions and roles
             }
         };
 
@@ -75,8 +75,8 @@ const UserForm = ({ user, roles, onSubmit, onCancel }) => {
                 try {
                     const userPermData = await userService.getUserPermissions(user._id);
                     setUserPermissions(userPermData);
-                } catch (err) {
-                    console.error('Error loading user permissions:', err);
+                } catch {
+                    // Error loading user permissions
                 } finally {
                     setLoadingPermissions(false);
                 }

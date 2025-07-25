@@ -6,19 +6,14 @@
 import { navigateTo, canNavigate } from '../services/navigationService.js';
 
 export const testNavigation = () => {
-    console.log('Navigation service status:', {
-        canNavigate: canNavigate(),
-        message: canNavigate() 
-            ? 'React Router navigation is available' 
-            : 'React Router navigation not available, will fall back to window.location'
-    });
+    // Navigation service status check
 
     // Test navigation to dashboard
     if (canNavigate()) {
-        console.log('Testing React Router navigation to /dashboard...');
+        // Testing React Router navigation to /dashboard
         navigateTo('/dashboard');
     } else {
-        console.log('Cannot test React Router navigation - navigate function not available');
+        // Cannot test React Router navigation - navigate function not available
     }
 };
 

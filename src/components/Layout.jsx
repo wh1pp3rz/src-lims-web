@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useAuth from '@/hooks/useAuth.js';
 import { Button } from '@/components/ui/button.jsx';
+import { filterByPermissions } from '@/utils/permissions.js';
 import {
     MenuIcon,
     HomeIcon,
@@ -28,7 +29,7 @@ const Layout = ({ children }) => {
         { name: 'Test Results', href: '/results', icon: ClipboardListIcon },
         { name: 'Reports', href: '/reports', icon: FileTextIcon },
         { name: 'User Management', href: '/users', icon: UsersIcon, permission: 'user_management' },
-        { name: 'Audit Logs', href: '/audit-logs', icon: ShieldCheckIcon, permission: 'view_audit_logs' },
+        { name: 'Audit Logs', href: '/audit-logs', icon: ShieldCheckIcon, permission: 'audit_logs' },
         { name: 'Settings', href: '/settings', icon: SettingsIcon },
     ];
 
@@ -38,12 +39,7 @@ const Layout = ({ children }) => {
         navigate('/login', { replace: true });
     };
 
-    const hasPermission = (permission) => {
-        if (!permission) return true;
-        return user?.permissions?.includes(permission) || user?.role?.toLowerCase() === 'admin';
-    };
-
-    const filteredNavigation = navigation.filter((item) => hasPermission(item.permission));
+    const filteredNavigation = filterByPermissions(navigation, user);
 
     return (
         <div className='min-h-screen bg-background'>

@@ -18,8 +18,8 @@ export const decodeJWT = (token) => {
         const decoded = JSON.parse(atob(payload));
 
         return decoded;
-    } catch (error) {
-        console.warn('Failed to decode JWT:', error);
+    } catch {
+        // Failed to decode JWT token
 
         return null;
     }
